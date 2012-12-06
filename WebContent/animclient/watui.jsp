@@ -73,13 +73,10 @@ object:focus {
 
 	//存或更新用户
 	function operateUser(userId, accessToken) {
-		console.log(userId+"================="+typeof userId);
-		$.post("/comicdiy/comicapi", {
+		$.post("/watui/watuiapi", {
 			'method' : 'operateWeiboUser',
 			'userId' : userId,
-			'accessToken' : accessToken,
-			'application' : "哇推",
-			'platform' : "sina"
+			'accessToken' : accessToken
 		}, function(result) {
 			//返回ture和false
 		});
