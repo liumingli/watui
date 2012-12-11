@@ -24,7 +24,7 @@ public class SpliceImage {
 
 	private static Logger log = Logger.getLogger(SpliceImage.class);
 
-	public static String spliceImage(String imagePath, String primaryLong,
+	public String spliceImage(String imagePath, String primaryLong,
 			String endingLong) {
 
 		String fileName = new File(primaryLong).getName();
