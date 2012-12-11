@@ -339,7 +339,7 @@ public class ComicServiceImplement implements ComicServiceInterface {
 				log.info("Splice image path is :"+imgPath);
 				
 				//发微博
-				String weiboId = this.publishWeibo(token, primaryLong,  content, appUrl);
+				String weiboId = this.publishWeibo(token, imgPath,  content, appUrl);
 				
 //				//删除临时拼成的文件
 //				File file = new File(imgPath);

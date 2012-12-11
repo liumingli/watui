@@ -2,8 +2,6 @@ package com.ybcx.watui.tools;
 
 import java.awt.Image;
 import java.awt.image.BufferedImage;
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -18,6 +16,9 @@ import javax.imageio.plugins.jpeg.JPEGImageWriteParam;
 import javax.imageio.stream.ImageOutputStream;
 
 import org.apache.log4j.Logger;
+
+import com.sun.image.codec.jpeg.JPEGCodec;
+import com.sun.image.codec.jpeg.JPEGImageDecoder;
 
 public class SpliceImage {
 
@@ -37,10 +38,14 @@ public class SpliceImage {
 		String destImg = imagePath + File.separator
 				+ fileName.substring(0, position) + "_weibo" + num + extend;
 		File outFile = new File(destImg);
+		
+		ImageOutputStream ios=null;
 		try {
 			// 读取第一张图片
 			File fileOne = new File(primaryLong);
-     		BufferedImage ImageOne = ImageIO.read(fileOne);
+     		//BufferedImage ImageOne = ImageIO.read(fileOne);
+	        JPEGImageDecoder decoder = JPEGCodec.createJPEGDecoder(new FileInputStream(fileOne));  
+	        BufferedImage ImageOne = decoder.decodeAsBufferedImage(); 
 			
 			int width = ImageOne.getWidth();// 图片宽度
 			int height = ImageOne.getHeight();// 图片高度
@@ -50,7 +55,9 @@ public class SpliceImage {
 
 			// 对第二张图片做相同的处理
 			File fileTwo = new File(endingLong);
-			BufferedImage ImageTwo = ImageIO.read(fileTwo);
+			//BufferedImage ImageTwo = ImageIO.read(fileTwo);
+			JPEGImageDecoder decoder2 = JPEGCodec.createJPEGDecoder(new FileInputStream(fileTwo));  
+		    BufferedImage ImageTwo = decoder2.decodeAsBufferedImage(); 
 			int width2 = ImageTwo.getWidth();// 图片宽度
 			int height2 = ImageTwo.getHeight();// 图片高度
 			int[] ImageArrayTwo = new int[width2 * height2];
@@ -90,7 +97,7 @@ public class SpliceImage {
 				writer = (ImageWriter) iter.next();
 			}
 
-			ImageOutputStream ios = ImageIO.createImageOutputStream(outFile);
+			ios = ImageIO.createImageOutputStream(outFile);
 			writer.setOutput(ios);
 
 			ImageWriteParam param = new JPEGImageWriteParam(
@@ -106,6 +113,12 @@ public class SpliceImage {
 
 		} catch (Exception e) {
 			e.printStackTrace();
+		}finally{
+			try {
+				ios.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 
 		if (outFile.exists()) {
@@ -117,7 +130,4 @@ public class SpliceImage {
 		}
 	}
 
-	public static void main(String[] args) {
-		System.out.println(spliceImage("D://img", "d://1.jpg", "d://2.jpg"));
-	}
 }
