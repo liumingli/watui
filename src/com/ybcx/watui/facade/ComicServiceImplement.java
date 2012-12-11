@@ -307,7 +307,7 @@ public class ComicServiceImplement implements ComicServiceInterface {
 				
 				boolean flag = false;
 				
-				String appUrl = "http://apps.weibo.com/wwwproducn";
+				String appUrl = "http://apps.weibo.com/watuiup";
 				
 				User user = dbVisitor.getUserById(userId);
 				String token = user.getAccessToken();
@@ -315,6 +315,7 @@ public class ComicServiceImplement implements ComicServiceInterface {
 				//取主动画的长图片路径
 				Yonkoma primary = dbVisitor.getYonkomaById(primaryId,"Primary");
 				String primaryLong = primary.getLongImg();
+				log.info("Primary image path : "+primaryLong);
 				//结局动画的长图片路径
 				String endingLong = "";
 				if("system".equals(type)){
@@ -334,29 +335,25 @@ public class ComicServiceImplement implements ComicServiceInterface {
 				
 				//拼图片，将主动画长图片和结局的图片拼接在一起，存在一个临时路径下，发微博成功后删除
 				SpliceImage splice = new SpliceImage();
-				String imgPath = splice.spliceImage(primaryLong,endingLong);
+				String imgPath = splice.spliceImage(imagePath,primaryLong,endingLong);
+				log.info("Splice image path is :"+imgPath);
 				
 				//发微博
-				String weiboId = this.publishWeibo(token, imgPath,  content, appUrl);
+				String weiboId = this.publishWeibo(token, primaryLong,  content, appUrl);
 				
-				//删除临时拼成的文件
-				File file = new File(imgPath);
-				boolean fileDel = false;
-				if(file.exists()){
-					fileDel=file.delete();
-				}
-				if(fileDel){
-					log.info("Delete the weibo spliceImage :"+file.getName());
-				}
+//				//删除临时拼成的文件
+//				File file = new File(imgPath);
+//				boolean fileDel = false;
+//				if(file.exists()){
+//					fileDel=file.delete();
+//				}
 				
 				//发送微博成功，
 				if(!"".equals(weiboId)){
 					//向数据库中插入一条数据
 					Weibostat stat = this.generateWeibostat(weiboId,primaryId,endingId,type,userId);
 					int rows = dbVisitor.createWeibostat(stat);
-					//返回
-					fileDel = true;
-					if(rows > 0 && fileDel){
+					if(rows > 0){
 						flag = true;
 					}
 				}else{
@@ -380,6 +377,7 @@ public class ComicServiceImplement implements ComicServiceInterface {
 
 	private String publishWeibo(String token, String imgPath, String content,
 			String appUrl) {
+		log.info("watui publish weibo parmas token :"+token);
 		String weiboId = "";
 		try{
 			try{
@@ -438,9 +436,9 @@ public class ComicServiceImplement implements ComicServiceInterface {
 		}
 		//先判断用户是否存在
 		int rows = dbVisitor.checkUserExist(userId);
-		log.info(rows+"----------");
 		//存在即更新数据，不存在就插入新记录
 		if(rows >0){
+			log.info(userId+"----------"+accessToken);
 			int udpRows = dbVisitor.updateUserById(userId,accessToken,nickName);
 			if(udpRows > 0){
 				flag = true;
