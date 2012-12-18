@@ -110,8 +110,8 @@ public class ComicServiceImplement implements ComicServiceInterface {
 	public String createAnimation(FileItem shotData, String userId,
 			String name, String content) {
 		boolean flag = true;
-		String rawPath = this.saveAnimationRaw(shotData);
-		log.info("Animation raw imagePath  is : "+rawPath);
+//		String rawPath = this.saveAnimationRaw(shotData);
+//		log.info("Animation raw imagePath  is : "+rawPath);
 		String thumbnail = this.saveThumbnailOf(shotData);
 		
 		Cartoon cartoon = generateCartoon(userId,name,content,thumbnail);
@@ -318,20 +318,20 @@ public class ComicServiceImplement implements ComicServiceInterface {
 				log.info("Primary image path : "+primaryLong);
 				//结局动画的长图片路径
 				String endingLong = "";
-				if("system".equals(type)){
+//				if("system".equals(type)){
 					Yonkoma ending = dbVisitor.getYonkomaById(endingId,"Ending");
 					endingLong = ending.getLongImg();
 					log.info("System ending image path : "+endingLong);
 					
-				}else if("custom".equals(type)){
-					//取出自定义结局的图片
-					Cartoon cartoon= dbVisitor.getAnimationById(endingId);
-					String thumbnailPath = cartoon.getThumbnail();
-					int position = thumbnailPath.lastIndexOf(".");
-					String extend = thumbnailPath.substring(position);
-					endingLong = thumbnailPath.substring(0,position)+"_Raw"+extend;	
-					log.info("Custom ending image path : "+endingLong);
-				}
+//				}else if("custom".equals(type)){
+//					//取出自定义结局的图片
+//					Cartoon cartoon= dbVisitor.getAnimationById(endingId);
+//					String thumbnailPath = cartoon.getThumbnail();
+//					int position = thumbnailPath.lastIndexOf(".");
+//					String extend = thumbnailPath.substring(position);
+//					endingLong = thumbnailPath.substring(0,position)+"_Raw"+extend;	
+//					log.info("Custom ending image path : "+endingLong);
+//				}
 				
 				//拼图片，将主动画长图片和结局的图片拼接在一起，存在一个临时路径下，发微博成功后删除
 				SpliceImage splice = new SpliceImage();
