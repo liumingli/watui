@@ -50,6 +50,11 @@ public interface ExtVisitorInterface {
 	
 	//获取素材缩略图
 	public static final String GETTHUMBNAIL ="getThumbnail";
+	
+	
+	
+	//-----------------------------腾讯开放平台相应api
+	public static final String GETTENDENTUSER = "getTendentUser";
     
     
 }

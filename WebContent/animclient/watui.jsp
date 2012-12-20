@@ -8,7 +8,7 @@
 <html>
 
 <head>
-<title>哇推--指尖上的动漫创作与分享工具</title>
+<title>指尖动漫--指尖上的动漫创作与分享工具</title>
 <meta name="google" value="notranslate" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 

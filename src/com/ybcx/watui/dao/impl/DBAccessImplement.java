@@ -97,6 +97,8 @@ public class DBAccessImplement  implements DBAccessInterface {
 				yonkoma.setFrame(Integer.parseInt(map.get("y_frame").toString()));
 				yonkoma.setType(map.get("y_type").toString());
 				yonkoma.setEnable(Integer.parseInt(map.get("y_enable").toString()));
+				yonkoma.setAuthor(map.get("y_author").toString());
+				yonkoma.setAd(Integer.parseInt(map.get("y_isad").toString()));
 			}
 		}
 		return yonkoma;
@@ -261,6 +263,8 @@ public class DBAccessImplement  implements DBAccessInterface {
 				yonkoma.setFrame(Integer.parseInt(map.get("y_frame").toString()));
 				yonkoma.setType(map.get("y_type").toString());
 				yonkoma.setEnable(Integer.parseInt(map.get("y_enable").toString()));
+				yonkoma.setAuthor(map.get("y_author").toString());
+				yonkoma.setAd(Integer.parseInt(map.get("y_isad").toString()));
 				list.add(yonkoma);
 			}
 		}

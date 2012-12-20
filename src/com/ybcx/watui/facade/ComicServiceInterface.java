@@ -41,6 +41,9 @@ public interface ComicServiceInterface {
 	public List<Yonkoma> getYonkomaByPage(String primary, String pageSize,
 			String pageNum);
 
+	public String getTendentUser(String openId, String openKey, String pf,
+			String pfKey);
+
 
 
 }

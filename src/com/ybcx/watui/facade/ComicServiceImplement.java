@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 
@@ -28,6 +29,8 @@ import weibo4j.http.ImageItem;
 import weibo4j.model.Status;
 import weibo4j.model.WeiboException;
 
+import com.qq.open.OpenApiV3;
+import com.qq.open.OpensnsException;
 import com.sun.image.codec.jpeg.ImageFormatException;
 import com.sun.image.codec.jpeg.JPEGCodec;
 import com.sun.image.codec.jpeg.JPEGImageDecoder;
@@ -528,6 +531,30 @@ public class ComicServiceImplement implements ComicServiceInterface {
 		int num = Integer.parseInt(pageNum);
 		List<Yonkoma> list  = dbVisitor.getYonkomaByPage(primary,size,num);
 		return list;
+	}
+
+	@Override
+	public String getTendentUser(String openId, String openKey, String pf,String pfKey) {
+		String result = "";
+		String appId = "801281774";
+		String appKey = "bb01c18c95cb8bb7e0a86ef32b616c4e";	
+		String scriptName = "/v3/user/get_info";
+		String protocol = "http";
+		String serverName = "119.147.19.43";
+		
+		OpenApiV3 open = new OpenApiV3(appId, appKey);
+		open.setServerName(serverName);
+		
+		HashMap<String,String> params = new HashMap<String,String>();
+		params.put("openid", openId);
+		params.put("openkey", openKey);
+		params.put("pf", pf);
+		try {
+			result = open.api(scriptName, params, protocol);
+		} catch (OpensnsException e) {
+			e.printStackTrace();
+		}
+		return result;
 	}
 
 

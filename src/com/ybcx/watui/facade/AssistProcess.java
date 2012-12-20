@@ -92,6 +92,18 @@ public class AssistProcess {
 			pw.print(result);
 			pw.close();
 			
+		}else if (action.equals(AppStarter.GETTENDENTUSER)) {
+			res.setContentType("text/plain;charset=UTF-8");
+			PrintWriter pw = res.getWriter();
+			String openId = req.getParameter("openId");
+			String openKey = req.getParameter("openKey");
+			String pf = req.getParameter("pf");
+			String pfKey = req.getParameter("pfKey");
+		    String result= apiAdaptor.getTendentUser(openId,openKey,pf,pfKey);
+			log.info(result);
+			pw.print(result);
+			pw.close();
+			
 		}else{
 			
 		}
