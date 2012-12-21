@@ -22,6 +22,8 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.util.Streams;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import weibo4j.Timeline;
 import weibo4j.Users;
@@ -29,6 +31,7 @@ import weibo4j.http.ImageItem;
 import weibo4j.model.Status;
 import weibo4j.model.WeiboException;
 
+import com.qq.open.ErrorCode;
 import com.qq.open.OpenApiV3;
 import com.qq.open.OpensnsException;
 import com.sun.image.codec.jpeg.ImageFormatException;
@@ -447,7 +450,7 @@ public class ComicServiceImplement implements ComicServiceInterface {
 				flag = true;
 			}
 		}else{
-			User user = this.generateUser(userId, accessToken, nickName);
+			User user = this.generateUser(userId, accessToken, nickName,"Sina");
 			int crtRows = dbVisitor.createNewUser(user);
 			if(crtRows > 0){
 				flag = true;
@@ -456,12 +459,13 @@ public class ComicServiceImplement implements ComicServiceInterface {
 		return String.valueOf(flag);
 	}
 
-	private User generateUser(String userId, String accessToken,String nickName) {
+	private User generateUser(String userId, String accessToken,String nickName,String platform) {
 		User user = new User();
 		user.setId(userId);
 		user.setNickName(nickName);
 		user.setCreateTime(WatuiUtils.getFormatNowTime());
 		user.setAccessToken(accessToken);
+		user.setPlatform(platform);
 		user.setWealth(100);
 		return user;
 	}
@@ -536,6 +540,53 @@ public class ComicServiceImplement implements ComicServiceInterface {
 	@Override
 	public String getTendentUser(String openId, String openKey, String pf,String pfKey) {
 		String result = "";
+		//从远程取用户
+		String resp = this.askTenderUser(openId, openKey, pf);
+		
+		  // 解码JSON
+        JSONObject jo = null;
+        try {
+            jo = new JSONObject(resp);
+         } catch (JSONException e) {
+            try {
+				throw new OpensnsException(ErrorCode.RESPONSE_DATA_INVALID, e);
+			} catch (OpensnsException e1) {
+				e1.printStackTrace();
+			} 
+        } 
+
+        // 检测ret值，为零时为正确返回
+        int ret = jo.optInt("ret", 0);
+        String nickName = jo.optString("nickname");
+        if(ret == 0){//返回userId
+        	result = this.operateTendentUser(openId,nickName);
+        	 return result;
+        }else{
+        	return resp;
+        }
+	  
+	}
+
+	private String operateTendentUser(String openId,String nickName) {
+		String res = "";
+		//先判断用户是否存在
+		String userId = dbVisitor.getTendUserByOpenid(openId);
+		//存在即更新数据，不存在就插入新记录
+		if(userId != null && !"".equals(userId)){
+			res = userId;
+		}else{
+			String newId = WatuiUtils.generateUID();
+			User user = this.generateUser(newId, openId, nickName,"Tendent");
+			int crtRows = dbVisitor.createNewUser(user);
+			if(crtRows > 0){
+				res = newId;
+			}
+		}
+		return res;
+	}
+
+	private String askTenderUser(String openId, String openKey, String pf) {
+		String result = "";
 		String appId = "801281774";
 		String appKey = "bb01c18c95cb8bb7e0a86ef32b616c4e";	
 		String scriptName = "/v3/user/get_info";
@@ -556,6 +607,7 @@ public class ComicServiceImplement implements ComicServiceInterface {
 		}
 		return result;
 	}
+	
 
 
 }

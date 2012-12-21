@@ -35,6 +35,8 @@ public interface DBAccessInterface {
 
 	public List<Yonkoma> getYonkomaByPage(String primary, int size, int num);
 
+	public String getTendUserByOpenid(String openId);
+
 
 
 		

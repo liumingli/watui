@@ -32,7 +32,6 @@
 			var openkey = getHttpParams("openkey");
 			var pf = getHttpParams("pf");
 			var pfkey = getHttpParams("pfkey");
-			console.log(openid+"========"+openkey);
 			
 			$.post("/watui/watuiapi", {
 				'method' : 'getTendentUser',

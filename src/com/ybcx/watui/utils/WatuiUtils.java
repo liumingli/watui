@@ -35,4 +35,10 @@ public class WatuiUtils {
 		return s;
 	}
 	
+	public static void main(String[] args) {
+		String url="http: //thirdapp3.qlogo.cn/qzopenapp/9c4f93a14c4a6ca2005f2f2e1e9f50bcb91d789b2fb256fc4acbc0bad2fb6198/50";
+		String openId = "14219AC2BF3FCDC2D80914235C042566";
+		System.out.println(openId.length());
+	 
+	}
 }

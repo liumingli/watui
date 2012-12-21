@@ -166,7 +166,7 @@ public class DBAccessImplement  implements DBAccessInterface {
 
 	@Override
 	public int createNewUser(final User user) {
-		String sql = "insert into t_watuiuser(wa_id,wa_nickName,wa_accessToken,wa_createTime,wa_wealth,wa_memo) values (?,?,?,?,?,?)";
+		String sql = "insert into t_watuiuser(wa_id,wa_nickName,wa_accessToken,wa_createTime,wa_wealth,wa_platform,wa_memo) values (?,?,?,?,?,?,?)";
 		int res =jdbcTemplate.update(sql, new PreparedStatementSetter() {
 			public void setValues(PreparedStatement ps) {
 				try {
@@ -175,7 +175,8 @@ public class DBAccessImplement  implements DBAccessInterface {
 					ps.setString(3, user.getAccessToken());
 					ps.setString(4, user.getCreateTime());
 					ps.setInt(5, user.getWealth());
-					ps.setString(6, "");
+					ps.setString(6, user.getPlatform());
+					ps.setString(7, "");
 
 				} catch (SQLException e) {
 					e.printStackTrace();
@@ -269,6 +270,18 @@ public class DBAccessImplement  implements DBAccessInterface {
 			}
 		}
 		return list;
+	}
+
+	@Override
+	public String getTendUserByOpenid(String openId) {
+		String userId = "";
+		String sql = "select * from t_watuiuser where wa_accessToken='"+openId+"'";
+		List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql);
+		if (rows != null && rows.size() > 0) {
+			Map<String, Object> map = (Map<String, Object>) rows.get(0);
+			userId = map.get("wa_id").toString();
+		}
+		return userId;
 	}
 	
 	

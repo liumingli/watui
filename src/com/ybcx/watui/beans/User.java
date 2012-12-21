@@ -6,7 +6,7 @@ public class User {
 	private String createTime;
 	private String accessToken;
 	private int wealth;
-	
+	private String platform;
 	public String getId() {
 		return id;
 	}
@@ -37,5 +37,10 @@ public class User {
 	public void setAccessToken(String accessToken) {
 		this.accessToken = accessToken;
 	}
-	
+	public String getPlatform() {
+		return platform;
+	}
+	public void setPlatform(String platform) {
+		this.platform = platform;
+	}
 }

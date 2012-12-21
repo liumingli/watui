@@ -8,6 +8,7 @@ public class Weibostat {
 	private String type;
 	private String user;
 	private String createTime;
+
 	
 	public String getCreateTime() {
 		return createTime;
