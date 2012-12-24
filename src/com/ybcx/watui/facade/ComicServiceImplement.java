@@ -560,11 +560,14 @@ public class ComicServiceImplement implements ComicServiceInterface {
         String nickName = jo.optString("nickname");
         if(ret == 0){//返回userId
         	result = this.operateTendentUser(openId,nickName);
-        	 return result;
-        }else{
-        	return resp;
+        	try {
+				jo.put("userId", result);
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
         }
-	  
+        
+		return jo.toString();
 	}
 
 	private String operateTendentUser(String openId,String nickName) {

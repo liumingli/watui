@@ -86,6 +86,8 @@ object:focus {
 	function createSWFById(divId, userId, w, h) {
 		var flashvars = {};
 		flashvars.userId = userId;
+		var pf="weibo";
+		flashvars.pf = pf;
 		var swfVersionStr = "11.1.0";
 		var xiSwfUrlStr = "playerProductInstall.swf";
 		var params = {};
