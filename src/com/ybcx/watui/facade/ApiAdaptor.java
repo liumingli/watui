@@ -112,8 +112,8 @@ public class ApiAdaptor {
 	}
 	
 	public String yonkomaToWeibo(String type, String primaryId,
-			String endingId, String userId, String content) {
-		String res = comicService.yonkomaToWeibo(type,primaryId,endingId,userId,content);
+			String endingId, String userId, String content,String animId) {
+		String res = comicService.yonkomaToWeibo(type,primaryId,endingId,userId,content,animId);
 		return res;
 	}
 	
@@ -198,9 +198,9 @@ public class ApiAdaptor {
 	}
 	
 	//FIXME 获取腾讯用户
-	public String getTendentUser(String openId, String openKey, String pf,
+	public String getTencentUser(String openId, String openKey, String pf,
 			String pfKey) {
-		String result = comicService.getTendentUser(openId,openKey,pf,pfKey);
+		String result = comicService.getTencentUser(openId,openKey,pf,pfKey);
 		return result;
 	}
 	

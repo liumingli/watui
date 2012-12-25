@@ -136,7 +136,8 @@ public class AppStarter extends HttpServlet implements ApplicationListener,
 			String endingId = req.getParameter("endingId");
 			String userId = req.getParameter("userId");
 			String content = req.getParameter("content");
-		    String result= apiAdaptor.yonkomaToWeibo(type,primaryId,endingId,userId,content);
+			String animId = req.getParameter("animId");
+		    String result= apiAdaptor.yonkomaToWeibo(type,primaryId,endingId,userId,content,animId);
 			log.info(result);
 			pw.print(result);
 			pw.close();

@@ -306,14 +306,14 @@ public class ComicServiceImplement implements ComicServiceInterface {
 
 	@Override
 	public String yonkomaToWeibo(String type, String primaryId,
-			String endingId, String userId, String content) {
+			String endingId, String userId, String content, String animId) {
 		
 				//根据type分两种方式：一种用系统定义的结局，则直接拼接图片;
 				//另一种是自定义的结局，则根据动画id找到图片再拼接
 				
 				boolean flag = false;
 				
-				String appUrl = "http://apps.weibo.com/watuiup";
+				String appUrl = "http://apps.weibo.com/watuiup?id="+animId;
 				
 				User user = dbVisitor.getUserById(userId);
 				String token = user.getAccessToken();
@@ -390,7 +390,7 @@ public class ComicServiceImplement implements ComicServiceInterface {
 				byte[] imgContent= readFileImage(imgPath);
 				ImageItem pic=new ImageItem("pic",imgContent);
 				
-				String resultText =content+"  应用地址："+appUrl;
+				String resultText =content+"  动画地址："+appUrl;
 				
 				String s=java.net.URLEncoder.encode(resultText,"utf-8");
 				Timeline tl = new Timeline();
@@ -538,10 +538,10 @@ public class ComicServiceImplement implements ComicServiceInterface {
 	}
 
 	@Override
-	public String getTendentUser(String openId, String openKey, String pf,String pfKey) {
+	public String getTencentUser(String openId, String openKey, String pf,String pfKey) {
 		String result = "";
 		//从远程取用户
-		String resp = this.askTenderUser(openId, openKey, pf);
+		String resp = this.askTencentUser(openId, openKey, pf);
 		
 		  // 解码JSON
         JSONObject jo = null;
@@ -559,7 +559,7 @@ public class ComicServiceImplement implements ComicServiceInterface {
         int ret = jo.optInt("ret", 0);
         String nickName = jo.optString("nickname");
         if(ret == 0){//返回userId
-        	result = this.operateTendentUser(openId,nickName);
+        	result = this.operateTencentUser(openId,nickName);
         	try {
 				jo.put("userId", result);
 			} catch (JSONException e) {
@@ -570,7 +570,7 @@ public class ComicServiceImplement implements ComicServiceInterface {
 		return jo.toString();
 	}
 
-	private String operateTendentUser(String openId,String nickName) {
+	private String operateTencentUser(String openId,String nickName) {
 		String res = "";
 		//先判断用户是否存在
 		String userId = dbVisitor.getTendUserByOpenid(openId);
@@ -579,7 +579,7 @@ public class ComicServiceImplement implements ComicServiceInterface {
 			res = userId;
 		}else{
 			String newId = WatuiUtils.generateUID();
-			User user = this.generateUser(newId, openId, nickName,"Tendent");
+			User user = this.generateUser(newId, openId, nickName,"Tencent");
 			int crtRows = dbVisitor.createNewUser(user);
 			if(crtRows > 0){
 				res = newId;
@@ -588,7 +588,7 @@ public class ComicServiceImplement implements ComicServiceInterface {
 		return res;
 	}
 
-	private String askTenderUser(String openId, String openKey, String pf) {
+	private String askTencentUser(String openId, String openKey, String pf) {
 		String result = "";
 		String appId = "801281774";
 		String appKey = "bb01c18c95cb8bb7e0a86ef32b616c4e";	

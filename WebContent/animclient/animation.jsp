@@ -47,7 +47,7 @@
 			
 			//调用v3/user/get_info接口返回用户状态
 			$.post("/watui/watuiapi", {
-				'method' : 'getTendentUser',
+				'method' : 'getTencentUser',
 				'openId' : openid,
 				'openKey' : openkey,
 				'pf' : pf,
@@ -75,13 +75,11 @@
 		}
 
 		
-		function getQueryStringRegExp(name) { 
-			var reg = new RegExp("(^|\\?|&)"+ name +"=([^&]*)(\\s|&|$)", "i"); 
-			if (reg.test(location.href)) return unescape(RegExp.$2.replace(/\+/g, " ")); return ""; 
-		}; 
-		
 		function createWatui(userId,pf){
 			var flashvars = {};
+			
+			flashvars.debug = 'true'; 
+			
 			flashvars.userId = userId;
 			flashvars.pf = pf;
 			var swfVersionStr = "11.1.0";

@@ -54,7 +54,7 @@ public interface ExtVisitorInterface {
 	
 	
 	//-----------------------------腾讯开放平台相应api
-	public static final String GETTENDENTUSER = "getTendentUser";
+	public static final String GETTENCENTUSER = "getTencentUser";
     
     
 }

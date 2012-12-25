@@ -26,7 +26,7 @@ public interface ComicServiceInterface {
 	public void getAssetFile(String relativePath, HttpServletResponse res);
 
 	public String yonkomaToWeibo(String type, String primaryId,
-			String endingId, String userId, String content);
+			String endingId, String userId, String content,  String animId);
 
 	public String operateWeiboUser(String userId, String accessToken);
 
@@ -41,7 +41,7 @@ public interface ComicServiceInterface {
 	public List<Yonkoma> getYonkomaByPage(String primary, String pageSize,
 			String pageNum);
 
-	public String getTendentUser(String openId, String openKey, String pf,
+	public String getTencentUser(String openId, String openKey, String pf,
 			String pfKey);
 
 
