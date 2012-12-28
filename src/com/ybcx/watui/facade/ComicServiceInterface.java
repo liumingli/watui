@@ -44,9 +44,6 @@ public interface ComicServiceInterface {
 	public String getTencentUser(String openId, String openKey, String pf,
 			String pfKey);
 
-	public String generateTappOauth();
-
-	public String getTokenAndUser(String code, String openId, String openKey);
 
 
 

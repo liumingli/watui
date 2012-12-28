@@ -57,11 +57,7 @@ public interface ExtVisitorInterface {
 	public static final String GETTENCENTUSER = "getTencentUser";
 	
 	
-	//请求tapp的code
-	public static final String GENERATETAPPOAUTH = "generateTappOauth";
-	
-	public static final String GETTAPPUSER = "getTappUser";
-	
+	//腾讯微博
 	public static final String SHARETOTAPP = "shareToTapp";
 	
 	

@@ -38,9 +38,6 @@ import com.sun.image.codec.jpeg.ImageFormatException;
 import com.sun.image.codec.jpeg.JPEGCodec;
 import com.sun.image.codec.jpeg.JPEGImageDecoder;
 import com.sun.image.codec.jpeg.JPEGImageEncoder;
-import com.tencent.weibo.oauthv2.OAuthV2;
-import com.tencent.weibo.utils.QHttpClient;
-import com.tencent.weibo.utils.QStrOperate;
 import com.ybcx.watui.beans.Cartoon;
 import com.ybcx.watui.beans.User;
 import com.ybcx.watui.beans.UserDetail;
@@ -614,55 +611,6 @@ public class ComicServiceImplement implements ComicServiceInterface {
 		return result;
 	}
 
-	@Override
-	public String generateTappOauth() {
-		// TODO Auto-generated method stub
-		OAuthV2 oAuth = new OAuthV2();
-		String appKey = systemConfigurer.getProperty("appKey").toString();
-		String appSecret = systemConfigurer.getProperty("appSecret").toString();
-		String redirectUri = systemConfigurer.getProperty("redirectUri").toString();
-		oAuth.setClientId(appKey);
-		oAuth.setClientSecret(appSecret);
-		oAuth.setRedirectUri(redirectUri);
-//		String url = "https://open.t.qq.com/cgi-bin/oauth2/authorize";
-//		QHttpClient client = new QHttpClient();
-//		String queryString = QStrOperate.getQueryString(oAuth.getAccessTokenByCodeParamsList());
-//        log.info("authorization queryString = "+queryString);
-//		String str = client.simpleHttpGet(url, queryString);
-		
-//		List<NameValuePair> paramsList = oauth.getAuthorizationParamsList();
-//		OAuthV2Request request = new OAuthV2Request();
-//		String url = "https://open.t.qq.com/cgi-bin/oauth2/authorize";
-//		request.getResource(url, paramsList, oauth);
-//		String authorizationUrl = OAuthV2Client.generateAuthorizationURL(oAuth);
-//		return authorizationUrl;
-		return null;
-	}
-
-	@Override
-	public String getTokenAndUser(String code, String openId, String openKey) {
-		String accessToken = "";
-		OAuthV2 oAuth = new OAuthV2();
-		String appKey = systemConfigurer.getProperty("appKey").toString();
-		String appSecret = systemConfigurer.getProperty("appSecret").toString();
-		String redirectUri = systemConfigurer.getProperty("redirectUri").toString();
-		oAuth.setClientId(appKey);
-		oAuth.setClientSecret(appSecret);
-		oAuth.setRedirectUri(redirectUri);
-		
-//		if(OAuthV2Client.setAuthorization(code,openId,openKey,oAuth)){
-//			try {
-//				if(OAuthV2Client.accessToken(oAuth)){
-//					accessToken = oAuth.getAccessToken();
-//				}
-//			} catch (Exception e) {
-//				e.printStackTrace();
-//			}
-//		}
-		
-		return accessToken;
-	}
-	
 
 
 }

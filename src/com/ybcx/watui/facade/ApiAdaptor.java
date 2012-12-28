@@ -201,15 +201,6 @@ public class ApiAdaptor {
 		return result;
 	}
 	
-	public String generateTappOauth() {
-		String result = comicService.generateTappOauth();
-		return result;
-	}
-	
-	public String getTokenAndUser(String code, String openId, String openKey) {
-		String result = comicService.getTokenAndUser(code,openId, openKey);
-		return result;
-	}
 	
 
 } // end of class
