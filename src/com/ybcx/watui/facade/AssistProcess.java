@@ -104,6 +104,26 @@ public class AssistProcess {
 			pw.print(result);
 			pw.close();
 			
+		}else if (action.equals(AppStarter.GENERATETAPPOAUTH)) {
+			res.setContentType("text/plain;charset=UTF-8");
+			PrintWriter pw = res.getWriter();
+		    String url = apiAdaptor.generateTappOauth();
+		    pw.println(url);
+		  //  res.sendRedirect(url);
+			pw.close();
+			
+		}else if (action.equals(AppStarter.GETTAPPUSER)) {
+			res.setContentType("text/plain;charset=UTF-8");
+			PrintWriter pw = res.getWriter();
+			String code = req.getParameter("code");
+			String openId = req.getParameter("openId");
+			String openKey = req.getParameter("openKey");
+			
+		    String result= apiAdaptor.getTokenAndUser(code,openId,openKey);
+			log.info(result);
+			pw.print(result);
+			pw.close();
+			
 		}else{
 			
 		}
