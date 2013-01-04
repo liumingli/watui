@@ -37,6 +37,8 @@ public interface DBAccessInterface {
 
 	public String getTendUserByOpenid(String openId);
 
+	public int getUserByUserIdAndPlatform(String userId, String pf);
+
 
 
 		

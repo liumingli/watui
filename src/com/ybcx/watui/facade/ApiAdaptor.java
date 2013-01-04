@@ -201,6 +201,18 @@ public class ApiAdaptor {
 		return result;
 	}
 	
+	public String operateTappUser(String openId, String nickName, String accessToken, String pf) {
+		// TODO Auto-generated method stub
+		String result = comicService.operateTappUser(openId,nickName,accessToken,pf);
+		return result;
+	}
+	
+	public String shareToTapp(String type, String primaryId, String endingId, String userId, String content, 
+			String animId, String openId, String openKey,String pf) {
+		String result = comicService.shareToTapp(type,primaryId,endingId,userId,content,animId,openId,openKey,pf);
+		return result;
+	}
+	
 	
 
 } // end of class

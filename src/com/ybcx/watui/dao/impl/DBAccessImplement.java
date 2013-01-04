@@ -283,6 +283,13 @@ public class DBAccessImplement  implements DBAccessInterface {
 		}
 		return userId;
 	}
+
+	@Override
+	public int getUserByUserIdAndPlatform(String userId, String pf) {
+		String sql = "select count(*) from t_watuiuser where wa_id='"+userId+"' and wa_platform='"+pf+"'";
+		int rows = jdbcTemplate.queryForInt(sql);
+		return rows;
+	}
 	
 	
 }

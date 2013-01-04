@@ -8,6 +8,7 @@ public class Weibostat {
 	private String type;
 	private String user;
 	private String createTime;
+	private String platform;
 
 	
 	public String getCreateTime() {
@@ -33,6 +34,12 @@ public class Weibostat {
 	}
 	public void setEnding(String ending) {
 		this.ending = ending;
+	}
+	public String getPlatform() {
+		return platform;
+	}
+	public void setPlatform(String platform) {
+		this.platform = platform;
 	}
 	public String getType() {
 		return type;

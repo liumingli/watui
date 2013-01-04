@@ -27,13 +27,17 @@ import org.json.JSONObject;
 
 import weibo4j.Timeline;
 import weibo4j.Users;
+import weibo4j.http.HttpClient;
 import weibo4j.http.ImageItem;
+import weibo4j.http.Response;
+import weibo4j.model.PostParameter;
 import weibo4j.model.Status;
 import weibo4j.model.WeiboException;
 
 import com.qq.open.ErrorCode;
 import com.qq.open.OpenApiV3;
 import com.qq.open.OpensnsException;
+import com.qq.open.SnsSigCheck;
 import com.sun.image.codec.jpeg.ImageFormatException;
 import com.sun.image.codec.jpeg.JPEGCodec;
 import com.sun.image.codec.jpeg.JPEGImageDecoder;
@@ -357,7 +361,7 @@ public class ComicServiceImplement implements ComicServiceInterface {
 				//发送微博成功，
 				if(!"".equals(weiboId)){
 					//向数据库中插入一条数据
-					Weibostat stat = this.generateWeibostat(weiboId,primaryId,endingId,type,userId);
+					Weibostat stat = this.generateWeibostat(weiboId,primaryId,endingId,type,userId,"sina");
 					int rows = dbVisitor.createWeibostat(stat);
 					if(rows > 0){
 						flag = true;
@@ -370,7 +374,7 @@ public class ComicServiceImplement implements ComicServiceInterface {
 	}
 
 	private Weibostat generateWeibostat(String weiboId, String primaryId,
-			String endingId, String type, String userId) {
+			String endingId, String type, String userId, String pf) {
 		Weibostat stat = new Weibostat();
 		stat.setId(weiboId);
 		stat.setPrimary(primaryId);
@@ -378,6 +382,7 @@ public class ComicServiceImplement implements ComicServiceInterface {
 		stat.setType(type);
 		stat.setUser(userId);
 		stat.setCreateTime(WatuiUtils.getFormatNowTime());
+		stat.setPlatform(pf);
 		return stat;
 	}
 
@@ -450,7 +455,7 @@ public class ComicServiceImplement implements ComicServiceInterface {
 				flag = true;
 			}
 		}else{
-			User user = this.generateUser(userId, accessToken, nickName,"Sina");
+			User user = this.generateUser(userId, accessToken, nickName,"sina");
 			int crtRows = dbVisitor.createNewUser(user);
 			if(crtRows > 0){
 				flag = true;
@@ -579,7 +584,7 @@ public class ComicServiceImplement implements ComicServiceInterface {
 			res = userId;
 		}else{
 			String newId = WatuiUtils.generateUID();
-			User user = this.generateUser(newId, openId, nickName,"Tencent");
+			User user = this.generateUser(newId, openId, nickName,"tencent");
 			int crtRows = dbVisitor.createNewUser(user);
 			if(crtRows > 0){
 				res = newId;
@@ -609,6 +614,122 @@ public class ComicServiceImplement implements ComicServiceInterface {
 			e.printStackTrace();
 		}
 		return result;
+	}
+
+	@Override
+	public String operateTappUser(String openId, String nickName, String accessToken, String pf) {
+		boolean flag = true;
+		String userId = openId.substring(0,16);
+		int count= dbVisitor.getUserByUserIdAndPlatform(userId,pf);
+		if(count >0){
+			log.info(userId+"----------"+accessToken);
+			int udpRows = dbVisitor.updateUserById(userId,accessToken,nickName);
+			if(udpRows < 0){
+				flag = false;
+			}
+		}else{
+			User user = this.generateUser(userId, accessToken, nickName,pf);
+			int crtRows = dbVisitor.createNewUser(user);
+			if(crtRows < 0){
+				flag = false;
+			}
+		}
+		
+		if(flag){
+			return userId;
+		}else{
+			return String .valueOf(flag);
+		}
+	}
+
+	@Override
+	public String shareToTapp(String type, String primaryId, String endingId,
+			String userId, String content, String animId, String openId, String openKey, String pf) {
+		
+		User user = dbVisitor.getUserById(userId);
+		String token = user.getAccessToken();
+
+		//取主动画的长图片路径
+		Yonkoma primary = dbVisitor.getYonkomaById(primaryId,"Primary");
+		String primaryLong = primary.getLongImg();
+		log.info("Primary image path : "+primaryLong);
+		//结局动画的长图片路径
+		String endingLong = "";
+
+		Yonkoma ending = dbVisitor.getYonkomaById(endingId,"Ending");
+		endingLong = ending.getLongImg();
+		log.info("System ending image path : "+endingLong);
+		
+		//拼图片，将主动画长图片和结局的图片拼接在一起，存在一个临时路径下
+		SpliceImage splice = new SpliceImage();
+		String imgPath = splice.spliceImage(imagePath,primaryLong,endingLong);
+		log.info("Splice image path is :"+imgPath);
+		
+	  //String tappId = this.createWeibo();
+		String url = "http://open.t.qq.com/api/t/add_pic";
+		HttpClient client = new HttpClient();
+		client.setToken(token);
+		
+		String appKey = systemConfigurer.getProperty("appKey");
+		String  appSecret = systemConfigurer.getProperty("appSecret");
+		
+		return null;
+	}
+	
+	public static String shareToTapp1(String content,String openId, String openKey, String pf) {
+		
+	  //String tappId = this.createWeibo();
+		String url = "http://open.t.qq.com/api/t/add_pic";
+		HttpClient client = new HttpClient();
+		client.setToken("123");
+		
+		String appKey = "801281774";
+		String appSecret = "bb01c18c95cb8bb7e0a86ef32b616c4e";
+		
+		PostParameter appid = new PostParameter("appid",appKey);
+		PostParameter openid = new PostParameter("openid",openId);
+		PostParameter openkey = new PostParameter("openkey",openKey);
+		PostParameter wbversion = new PostParameter("wbversion","1");
+		PostParameter format = new PostParameter("format","json");
+		PostParameter contentParam = new PostParameter("content",content);
+		PostParameter clientip = new PostParameter("clientip","119.253.56.46");
+		//PostParameter pic = new PostParameter("pic","D://123.jpg");
+		
+		PostParameter pic = new PostParameter("pic_url","http://t2.qpic.cn/mblogpic/9c7e34358608bb61a696/2000");
+		
+		HashMap<String, String> map = new HashMap<String,String>();
+		map.put("appid","801281774");
+		map.put("openid",openId);
+		map.put("openkey",openKey);
+		map.put("wbversion","1");
+		map.put("reqtime",String.valueOf(new Date().getTime()));
+		
+		PostParameter sigParam = null;
+		
+		try {
+			String sig = SnsSigCheck.makeSig("post","t/add_pic", map, appSecret);
+			sigParam = new PostParameter("sig",sig);
+		} catch (OpensnsException e) {
+			e.printStackTrace();
+		}
+		
+		PostParameter[] params = new PostParameter[]{appid,openid,openkey,wbversion,format,contentParam,clientip,pic,sigParam};
+		
+		try {
+			Response response = client.post(url, params);
+			System.out.println("Response："+response.asString());
+		} catch (WeiboException e) {
+			e.printStackTrace();
+		}
+			
+		
+		return null;
+	}
+
+	public static void main(String[] args) {
+		String openid = "14219AC2BF3FCDC2D80914235C042566";
+		String openkey = "2A7B4DFBA1AEEFE3CB97F678128C2FF4";
+		shareToTapp1("hello"+System.currentTimeMillis(),openid,openkey,"tapp");
 	}
 
 

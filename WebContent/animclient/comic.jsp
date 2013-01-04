@@ -30,19 +30,49 @@
 	 	 window.onload = function(){
 	 		var openid = getHttpParams("openid");
 			var openkey = getHttpParams("openkey");
-	 	 	var name = getHttpParams("name");
+			console.log(openid+"----------"+openkey);
 	 	 	var nick = getHttpParams("nick");
+	 	 	var pf = getHttpParams("pf");
 	 	 	var oauth2token = getHttpParams("oauth2atoken");
+// 	 	 	console.log(oauth2token);
 	 	 	
 	 	 	var strs = new Array();
 	 	 	strs = oauth2token.split("&");
-	 	 	for(var i=0;i<strs.length;i++){
-	 	 		console.log(strs[i]);
+// 	 	 	for(var i=0;i<strs.length;i++){
+// 	 	 		console.log(strs[i]);
+// 	 	 	}
+	 	 	var str = strs[0];
+	 	 	var arr = new Array();
+	 	 	arr = str.split("=");
+	 	 	var accessToken = arr[1];
+// 	 	 	console.log(accessToken);
+	 	 	
+	 	 	if(openid != null && openid !=""&& openkey != null && openkey !=""){
+	 	 		//操作用户，正常后返回id，否则返回false
+	 	 	  	operateTappUser(nick,pf,accessToken,openid,openkey);
 	 	 	}
 	 	 };
+	 	 
+	 	 function operateTappUser(nick,pf,accessToken,openid,openkey){
+	 		$.post("/watui/watuiapi", {
+				'method' : 'operateTappUser',
+				'openId' : openid,
+				'nick' : nick,
+				'accessToken' : accessToken,
+				'pf' : pf
+				
+			}, function(result) {
+				var userId = result;
+// 				console.log(userId);
+				if(result != "false"){
+					 createWatui(userId,pf,openid,openkey);
+				}
+			});
+	 		 
+	 	 }
 		
 		
-		function createWatui(userId,pf){
+		function createWatui(userId,pf,openid,openkey){
 			var flashvars = {};
 			
 			flashvars.debug = 'true'; 
@@ -78,13 +108,6 @@
         </p>
        
     </div>
-    
-    <form action="https://open.t.qq.com/cgi-bin/oauth2/authorize"
-		method="get" target="_top" style="display: none;" id="form1">
-		<input type="hidden" id="redirect_uri" name="redirect_uri" value="http://diy.produ.cn/watui/animclient/comic.jsp"/> 
-		<input type="hidden" id="client_id" name="client_id"  value="801281774"/> 
-		<input type="hidden" id="response_type" name="response_type" value="code"/> 
-	</form>
         
 </body>
 </html>
