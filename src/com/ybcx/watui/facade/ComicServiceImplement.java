@@ -515,9 +515,8 @@ public class ComicServiceImplement implements ComicServiceInterface {
 	}
 
 	@Override
-	public List<Cartoon> getAmimByPage(String pageNum) {
-		int pageSize = Integer.parseInt(systemConfigurer.getProperty("pageSize"));
-		List<Cartoon> list = dbVisitor.getAmimByPage(Integer.parseInt(pageNum),pageSize);
+	public List<Cartoon> getAnimByPage(String pageNum, String pageSize) {
+		List<Cartoon> list = dbVisitor.getAmimByPage(Integer.parseInt(pageNum),Integer.parseInt(pageSize));
 		return list;
 	}
 
@@ -676,6 +675,7 @@ public class ComicServiceImplement implements ComicServiceInterface {
 		return null;
 	}
 	
+	//FIXME 测试
 	public static String shareToTapp1(String content,String openId, String openKey, String pf) {
 		
 	  //String tappId = this.createWeibo();
@@ -721,7 +721,6 @@ public class ComicServiceImplement implements ComicServiceInterface {
 		} catch (WeiboException e) {
 			e.printStackTrace();
 		}
-			
 		
 		return null;
 	}

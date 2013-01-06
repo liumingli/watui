@@ -47,7 +47,19 @@ public class AssistProcess {
 			res.setContentType("text/plain;charset=UTF-8");
 			PrintWriter pw = res.getWriter();
 			String pageNum = req.getParameter("pageNum");
-			String result = apiAdaptor.getAnimByPage(pageNum);
+			String pageSize = req.getParameter("pageSize");
+			String result = apiAdaptor.getAnimByPage(pageNum,pageSize);
+			log.debug(result);
+			pw.print(result);
+			pw.close();
+			
+		}else if (action.equals(AppStarter.GETWEBANIM)) {
+			res.setContentType("text/plain;charset=UTF-8");
+			PrintWriter pw = res.getWriter();
+			String pageNum = req.getParameter("pageNum");
+			String pageSize = req.getParameter("pageSize");
+			String callBack = req.getParameter("callback");
+			String result = callBack+"("+apiAdaptor.getAnimByPage(pageNum,pageSize)+")";
 			log.debug(result);
 			pw.print(result);
 			pw.close();

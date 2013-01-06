@@ -39,6 +39,9 @@ public interface ExtVisitorInterface {
 	//分页取动画
 	public static final String GETANIMBYPAGE = "getAnimByPage";
 	
+	//分页取动画加一个参数callback(给网站用的)
+	public static final String GETWEBANIM = "getWebAnim";
+	
 	
 	//-----------------以下三个没有用
 	

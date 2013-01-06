@@ -124,8 +124,8 @@ public class ApiAdaptor {
 		return JSONArray.fromObject(detail).toString();
 	}
 	
-	public String getAnimByPage(String pageNum) {
-		List<Cartoon> list = comicService.getAmimByPage(pageNum);
+	public String getAnimByPage(String pageNum, String pageSize) {
+		List<Cartoon> list = comicService.getAnimByPage(pageNum,pageSize);
 		JSONArray jsonArray = JSONArray.fromCollection(list);
 		processCartoon(jsonArray);
 		return jsonArray.toString();

@@ -32,7 +32,7 @@ public interface ComicServiceInterface {
 
 	public UserDetail getUserInfo(String userId);
 
-	public List<Cartoon> getAmimByPage(String pageNum);
+	public List<Cartoon> getAnimByPage(String pageNum, String pageSize);
 
 	public List<Cartoon> getAnimationsOf(String userId);
 
