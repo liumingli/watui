@@ -40,6 +40,28 @@ object:focus {
      
   	//加载页面的时候先看token
  	 window.onload = function(){
+  		//取客户端真实IP
+   		<%
+		 	String ip = request.getHeader("X-Forwarded-For");   
+	        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {   
+	            ip = request.getHeader("Proxy-Client-IP");   
+	        }   
+	        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {   
+	            ip = request.getHeader("WL-Proxy-Client-IP");   
+	        }   
+	        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {   
+	            ip = request.getHeader("HTTP_CLIENT_IP");   
+	        }   
+	        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {   
+	            ip = request.getHeader("HTTP_X_FORWARDED_FOR");   
+	        }   
+	        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {   
+	            ip = request.getRemoteAddr();   
+	        }   
+		%>
+		
+		var source = "<%=ip%>";
+  		
   		 <%String signed = request.getParameter("signed_request");
 			String access_token = "";
 			String user_id = "";
@@ -57,7 +79,7 @@ object:focus {
 			//看用户是否存在,存库或更新库
 			operateUser(userId, accessToken);
 			//动态创建应用
-			createSWFById('flashContent', userId, "760", "600");
+			createSWFById('flashContent', userId, "760", "600",source);
 		}
 	};
 	
@@ -83,10 +105,11 @@ object:focus {
 	}
 	
 	//动态创建
-	function createSWFById(divId, userId, w, h) {
+	function createSWFById(divId, userId, w, h, source) {
 		var flashvars = {};
+		flashvars.ip = source;
 		flashvars.userId = userId;
-		var pf="weibo";
+		var pf="sina";
 		flashvars.pf = pf;
 		var swfVersionStr = "11.1.0";
 		var xiSwfUrlStr = "playerProductInstall.swf";
