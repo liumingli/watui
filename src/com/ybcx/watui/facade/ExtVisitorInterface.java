@@ -42,6 +42,9 @@ public interface ExtVisitorInterface {
 	//分页取动画加一个参数callback(给网站用的)
 	public static final String GETWEBANIM = "getWebAnim";
 	
+	//发送动画短篇到新浪微博
+	public static final String MOVIECLIPTOWEIBO = "movieClipToWeibo";
+	
 	
 	//-----------------以下三个没有用
 	
@@ -56,6 +59,7 @@ public interface ExtVisitorInterface {
 	
 	
 	
+	
 	//-----------------------------腾讯开放平台相应api
 	public static final String GETTENCENTUSER = "getTencentUser";
 	
@@ -64,7 +68,6 @@ public interface ExtVisitorInterface {
 	
 	//腾讯微博
 	public static final String SHARETOTAPP = "shareToTapp";
-	
 	
     
     

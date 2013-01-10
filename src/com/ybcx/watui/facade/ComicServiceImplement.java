@@ -395,7 +395,7 @@ public class ComicServiceImplement implements ComicServiceInterface {
 				byte[] imgContent= readFileImage(imgPath);
 				ImageItem pic=new ImageItem("pic",imgContent);
 				
-				String resultText =content+"  动画地址："+appUrl;
+				String resultText =content+"  应用地址："+appUrl;
 				
 				String s=java.net.URLEncoder.encode(resultText,"utf-8");
 				Timeline tl = new Timeline();
@@ -540,6 +540,44 @@ public class ComicServiceImplement implements ComicServiceInterface {
 		List<Yonkoma> list  = dbVisitor.getYonkomaByPage(primary,size,num);
 		return list;
 	}
+	
+	@Override
+	public String createClipImage(FileItem shotData) {
+		String fileName = shotData.getName();
+		String filePath = imagePath + File.separator + fileName;
+		File file = new File(filePath);
+		try {
+			shotData.write(file);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return filePath;
+	}
+
+	@Override
+	public String movieClipToWeibo(String userId, String clipId, String content, String type, String imgPath) {
+		boolean flag = false;
+		User user = dbVisitor.getUserById(userId);
+		String token = user.getAccessToken();
+		String appUrl = "http://apps.weibo.com/watuiup";
+		String weiboId = this.publishWeibo(token, imgPath,  content, appUrl);
+		//发送微博成功，
+		if(!"".equals(weiboId)){
+			//向数据库中插入一条数据
+			Weibostat stat = this.generateWeibostat(weiboId,clipId,clipId,type,userId,"sina");
+			int rows = dbVisitor.createWeibostat(stat);
+			if(rows > 0){
+				flag = true;
+			}
+		}else{
+			log.info("Weibo exception, return status is null");
+		}
+		
+		return String.valueOf(flag);
+	}
+
+
+	
 
 	@Override
 	public String getTencentUser(String openId, String openKey, String pf,String pfKey) {
@@ -730,7 +768,6 @@ public class ComicServiceImplement implements ComicServiceInterface {
 		String openkey = "2A7B4DFBA1AEEFE3CB97F678128C2FF4";
 		shareToTapp1("hello"+System.currentTimeMillis(),openid,openkey,"tapp");
 	}
-
 
 
 }

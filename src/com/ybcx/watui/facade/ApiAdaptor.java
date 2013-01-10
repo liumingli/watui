@@ -3,6 +3,7 @@
  */
 package com.ybcx.watui.facade;
 
+import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
@@ -213,6 +214,71 @@ public class ApiAdaptor {
 		return result;
 	}
 	
+	public String createImgAndPublish(List<FileItem> fileItems) {
+		String result = "";
+		//先保存400的图片
+		String filePath = this.createClipImage(fileItems);
+		File imgFile = new File(filePath);
+		if(imgFile.exists()){
+			//再发微博
+			result = this.publishWeibo(fileItems,filePath);
+		}
+		return result;
+	}
+	
+	private String createClipImage(List<FileItem> fileItems) {
+		FileItem shotData = null;
+		for (int i = 0; i < fileItems.size(); i++) {
+			FileItem item = fileItems.get(i);
+			if (!item.isFormField()) {
+				//图片数据
+				shotData = item;
+			}
+		}
+	
+		String result = comicService.createClipImage(shotData);
+		
+		return result;
+	}
+	
+	private String publishWeibo(List<FileItem> fileItems, String imgPath) {
+		String userId = "";
+		String content = "";
+		String type = "";
+		String clipId = "";
+		
+		for (int i = 0; i < fileItems.size(); i++) {
+			
+			FileItem item = fileItems.get(i);
+			if (item.isFormField()) {
+				
+				if (item.getFieldName().equals("userId")) {
+					userId = item.getString();
+				}
+				
+				if (item.getFieldName().equals("movieId")) {
+					clipId = item.getString();
+				}
+				
+				if (item.getFieldName().equals("content")) {
+					try {
+						content = item.getString("UTF-8");
+					} catch (UnsupportedEncodingException e) {
+						e.printStackTrace();
+					}
+				}
+				
+				if(item.getFieldName().equals("type")){
+					type = item.getString();
+				}
+				
+			}
+		}//取参数完成
+		
+		String result = comicService.movieClipToWeibo(userId,clipId,content,type,imgPath);
+		
+		return result;
+	}
 	
 
 } // end of class
