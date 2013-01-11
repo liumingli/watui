@@ -731,12 +731,10 @@ public class ComicServiceImplement implements ComicServiceInterface {
 		PostParameter format = new PostParameter("format","json");
 		PostParameter contentParam = new PostParameter("content",content);
 		PostParameter clientip = new PostParameter("clientip","119.253.56.46");
-		//PostParameter pic = new PostParameter("pic","D://123.jpg");
-		
-		PostParameter pic = new PostParameter("pic_url","http://t2.qpic.cn/mblogpic/9c7e34358608bb61a696/2000");
+		PostParameter pic = new PostParameter("pic","D://123.jpg");
 		
 		HashMap<String, String> map = new HashMap<String,String>();
-		map.put("appid","801281774");
+		map.put("appid",appKey);
 		map.put("openid",openId);
 		map.put("openkey",openKey);
 		map.put("wbversion","1");
@@ -765,7 +763,7 @@ public class ComicServiceImplement implements ComicServiceInterface {
 
 	public static void main(String[] args) {
 		String openid = "14219AC2BF3FCDC2D80914235C042566";
-		String openkey = "2A7B4DFBA1AEEFE3CB97F678128C2FF4";
+		String openkey = "75869870BBAD0590086F51913C99E2CB";
 		shareToTapp1("hello"+System.currentTimeMillis(),openid,openkey,"tapp");
 	}
 

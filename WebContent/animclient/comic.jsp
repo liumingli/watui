@@ -28,9 +28,31 @@
 		 }
 		
 	 	 window.onload = function(){
+	 		 
+	 		//取客户端真实IP
+	    		<%
+	 		 	String ip = request.getHeader("X-Forwarded-For");   
+	 	        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {   
+	 	            ip = request.getHeader("Proxy-Client-IP");   
+	 	        }   
+	 	        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {   
+	 	            ip = request.getHeader("WL-Proxy-Client-IP");   
+	 	        }   
+	 	        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {   
+	 	            ip = request.getHeader("HTTP_CLIENT_IP");   
+	 	        }   
+	 	        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {   
+	 	            ip = request.getHeader("HTTP_X_FORWARDED_FOR");   
+	 	        }   
+	 	        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {   
+	 	            ip = request.getRemoteAddr();   
+	 	        }   
+	 		%>
+	 		
+	 		var source = "<%=ip%>";
+	 		 
 	 		var openid = getHttpParams("openid");
 			var openkey = getHttpParams("openkey");
-			console.log(openid+"----------"+openkey);
 	 	 	var nick = getHttpParams("nick");
 	 	 	var pf = getHttpParams("pf");
 	 	 	var oauth2token = getHttpParams("oauth2atoken");
@@ -65,20 +87,21 @@
 				var userId = result;
 // 				console.log(userId);
 				if(result != "false"){
-					 createWatui(userId,pf,openid,openkey);
+					 createWatui(userId,pf,openid,openkey,source);
 				}
 			});
 	 		 
 	 	 }
 		
 		
-		function createWatui(userId,pf,openid,openkey){
+		function createWatui(userId,pf,openid,openkey,source){
 			var flashvars = {};
 			
 			flashvars.debug = 'true'; 
-			var userId = "abc";
 			flashvars.userId = userId;
 			flashvars.pf = pf;
+			
+			flashvars.ip = source;
 			
 			var swfVersionStr = "11.1.0";
 			var xiSwfUrlStr = "playerProductInstall.swf";
@@ -92,7 +115,7 @@
 			attributes.id = "flashContent";
 			attributes.name = "flashContent";
 			attributes.align = "middle";
-			swfobject.embedSWF("Watui.swf?v=1.03&date=1227", "flashContent", 760, 600, swfVersionStr, xiSwfUrlStr,
+			swfobject.embedSWF("Watui.swf?v=1.04&date=0110", "flashContent", 760, 600, swfVersionStr, xiSwfUrlStr,
 					flashvars, params, attributes);
 			swfobject.createCSS("#flashContent", "display:block;text-align:left;");
 		}
