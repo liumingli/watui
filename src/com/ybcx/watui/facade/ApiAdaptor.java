@@ -195,13 +195,6 @@ public class ApiAdaptor {
 		}
 	}
 	
-	//FIXME 获取腾讯用户
-	public String getTencentUser(String openId, String openKey, String pf,
-			String pfKey) {
-		String result = comicService.getTencentUser(openId,openKey,pf,pfKey);
-		return result;
-	}
-	
 	public String operateTappUser(String openId, String nickName, String accessToken, String pf) {
 		// TODO Auto-generated method stub
 		String result = comicService.operateTappUser(openId,nickName,accessToken,pf);
@@ -209,8 +202,8 @@ public class ApiAdaptor {
 	}
 	
 	public String shareToTapp(String type, String primaryId, String endingId, String userId, String content, 
-			String animId, String openId, String openKey,String pf) {
-		String result = comicService.shareToTapp(type,primaryId,endingId,userId,content,animId,openId,openKey,pf);
+			String openId, String openKey, String pf, String ip) {
+		String result = comicService.shareToTapp(type,primaryId,endingId,userId,content,openId,openKey,pf,ip);
 		return result;
 	}
 	
@@ -280,5 +273,74 @@ public class ApiAdaptor {
 		return result;
 	}
 	
+	public String createImgAndSend(List<FileItem> fileItems) {
+		String result = "";
+		//先保存400的图片
+		String filePath = this.createClipImage(fileItems);
+		File imgFile = new File(filePath);
+		if(imgFile.exists()){
+			//再发微博
+			result = this.sendToTapp(fileItems,filePath);
+		}
+		return result;
+	}
+	
+	private String sendToTapp(List<FileItem> fileItems, String filePath) {
+		String userId = "";
+		String content = "";
+		String type = "";
+		String clipId = "";
+		String pf = "";
+		String openId = "";
+		String openKey = "";
+		String ip = "";
+		
+		for (int i = 0; i < fileItems.size(); i++) {
+			
+			FileItem item = fileItems.get(i);
+			if (item.isFormField()) {
+				
+				if (item.getFieldName().equals("userId")) {
+					userId = item.getString();
+				}
+				
+				if (item.getFieldName().equals("movieId")) {
+					clipId = item.getString();
+				}
+				
+				if (item.getFieldName().equals("content")) {
+					try {
+						content = item.getString("UTF-8");
+					} catch (UnsupportedEncodingException e) {
+						e.printStackTrace();
+					}
+				}
+				
+				if(item.getFieldName().equals("type")){
+					type = item.getString();
+				}
+				
+				if(item.getFieldName().equals("pf")){
+					pf = item.getString();
+				}
+				
+				if(item.getFieldName().equals("openId")){
+					openId = item.getString();
+				}
+				
+				if(item.getFieldName().equals("openKey")){
+					openKey = item.getString();
+				}
+				if(item.getFieldName().equals("ip")){
+					ip = item.getString();
+				}
+				
+			}
+		}//取参数完成
+		
+		String result = comicService.movieClipToTapp(userId,clipId,content,type,filePath,pf,openId,openKey,ip);
+		
+		return result;
+	}
 
 } // end of class

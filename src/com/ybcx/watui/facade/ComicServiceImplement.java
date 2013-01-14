@@ -22,20 +22,16 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.util.Streams;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import weibo4j.Timeline;
 import weibo4j.Users;
 import weibo4j.http.HttpClient;
 import weibo4j.http.ImageItem;
-import weibo4j.http.Response;
 import weibo4j.model.PostParameter;
 import weibo4j.model.Status;
 import weibo4j.model.WeiboException;
+import weibo4j.org.json.JSONObject;
 
-import com.qq.open.ErrorCode;
-import com.qq.open.OpenApiV3;
 import com.qq.open.OpensnsException;
 import com.qq.open.SnsSigCheck;
 import com.sun.image.codec.jpeg.ImageFormatException;
@@ -159,20 +155,20 @@ public class ComicServiceImplement implements ComicServiceInterface {
 		return filePath;
 	}
 
-	private String saveAnimationRaw(FileItem imgData) {
-		String fileName = imgData.getName();
-		int position = fileName.lastIndexOf(".");
-		String extend = fileName.substring(position);
-		String newName = fileName.substring(0,position)+"_Raw"+extend;
-		String filePath = imagePath + File.separator + newName;
-		File file = new File(filePath);
-		try {
-			imgData.write(file);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return filePath;
-	}
+//	private String saveAnimationRaw(FileItem imgData) {
+//		String fileName = imgData.getName();
+//		int position = fileName.lastIndexOf(".");
+//		String extend = fileName.substring(position);
+//		String newName = fileName.substring(0,position)+"_Raw"+extend;
+//		String filePath = imagePath + File.separator + newName;
+//		File file = new File(filePath);
+//		try {
+//			imgData.write(file);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//		return filePath;
+//	}
 
 	
 
@@ -575,84 +571,7 @@ public class ComicServiceImplement implements ComicServiceInterface {
 		
 		return String.valueOf(flag);
 	}
-
-
 	
-
-	@Override
-	public String getTencentUser(String openId, String openKey, String pf,String pfKey) {
-		String result = "";
-		//从远程取用户
-		String resp = this.askTencentUser(openId, openKey, pf);
-		
-		  // 解码JSON
-        JSONObject jo = null;
-        try {
-            jo = new JSONObject(resp);
-         } catch (JSONException e) {
-            try {
-				throw new OpensnsException(ErrorCode.RESPONSE_DATA_INVALID, e);
-			} catch (OpensnsException e1) {
-				e1.printStackTrace();
-			} 
-        } 
-
-        // 检测ret值，为零时为正确返回
-        int ret = jo.optInt("ret", 0);
-        String nickName = jo.optString("nickname");
-        if(ret == 0){//返回userId
-        	result = this.operateTencentUser(openId,nickName);
-        	try {
-				jo.put("userId", result);
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}
-        }
-        
-		return jo.toString();
-	}
-
-	private String operateTencentUser(String openId,String nickName) {
-		String res = "";
-		//先判断用户是否存在
-		String userId = dbVisitor.getTendUserByOpenid(openId);
-		//存在即更新数据，不存在就插入新记录
-		if(userId != null && !"".equals(userId)){
-			res = userId;
-		}else{
-			String newId = WatuiUtils.generateUID();
-			User user = this.generateUser(newId, openId, nickName,"tencent");
-			int crtRows = dbVisitor.createNewUser(user);
-			if(crtRows > 0){
-				res = newId;
-			}
-		}
-		return res;
-	}
-
-	private String askTencentUser(String openId, String openKey, String pf) {
-		String result = "";
-		String appId = "801281774";
-		String appKey = "bb01c18c95cb8bb7e0a86ef32b616c4e";	
-		String scriptName = "/v3/user/get_info";
-		String protocol = "http";
-		String serverName = "119.147.19.43";
-		
-		OpenApiV3 open = new OpenApiV3(appId, appKey);
-		open.setServerName(serverName);
-		
-		HashMap<String,String> params = new HashMap<String,String>();
-		params.put("openid", openId);
-		params.put("openkey", openKey);
-		params.put("pf", pf);
-		try {
-			result = open.api(scriptName, params, protocol);
-		} catch (OpensnsException e) {
-			e.printStackTrace();
-		}
-		return result;
-	}
-
 	@Override
 	public String operateTappUser(String openId, String nickName, String accessToken, String pf) {
 		boolean flag = true;
@@ -681,10 +600,10 @@ public class ComicServiceImplement implements ComicServiceInterface {
 
 	@Override
 	public String shareToTapp(String type, String primaryId, String endingId,
-			String userId, String content, String animId, String openId, String openKey, String pf) {
-		
-		User user = dbVisitor.getUserById(userId);
-		String token = user.getAccessToken();
+			String userId, String content, String openId, String openKey, String pf,String ip) {
+		boolean flag = false;
+//		User user = dbVisitor.getUserById(userId);
+//		String token = user.getAccessToken();
 
 		//取主动画的长图片路径
 		Yonkoma primary = dbVisitor.getYonkomaById(primaryId,"Primary");
@@ -702,36 +621,56 @@ public class ComicServiceImplement implements ComicServiceInterface {
 		String imgPath = splice.spliceImage(imagePath,primaryLong,endingLong);
 		log.info("Splice image path is :"+imgPath);
 		
-	  //String tappId = this.createWeibo();
-		String url = "http://open.t.qq.com/api/t/add_pic";
-		HttpClient client = new HttpClient();
-		client.setToken(token);
+		if(new File(imgPath).exists()){
+			weibo4j.org.json.JSONObject response = publishTencentWeibo(content,openId,openKey,ip,imgPath);
+			//发微博成功
+			try {
+				if(response.getInt("ret") == 0){
+					weibo4j.org.json.JSONObject weibo = response.getJSONObject("data");
+					String weiboId = weibo.getString("id");
+					Weibostat stat = this.generateWeibostat(weiboId,primaryId,endingId,type,userId,pf);
+					int rows = dbVisitor.createWeibostat(stat);
+					if(rows > 0){
+						flag = true;
+					}
+				}else{
+					log.info("Publish tencent weibo failed, error msg is "+response.getString("msg"));
+				}
+			} catch (weibo4j.org.json.JSONException e) {
+				e.printStackTrace();
+			}
+		}
 		
-		String appKey = systemConfigurer.getProperty("appKey");
-		String  appSecret = systemConfigurer.getProperty("appSecret");
-		
-		return null;
+		return String.valueOf(flag);
 	}
 	
-	//FIXME 测试
-	public static String shareToTapp1(String content,String openId, String openKey, String pf) {
-		
-	  //String tappId = this.createWeibo();
-		String url = "http://open.t.qq.com/api/t/add_pic";
+	private weibo4j.org.json.JSONObject publishTencentWeibo(String content,String openId, String openKey,String ip,String imgPath) {
+		weibo4j.org.json.JSONObject response = new weibo4j.org.json.JSONObject();
+		String url = "http://open.t.qq.com/api/t/add_pic_url";
 		HttpClient client = new HttpClient();
 		client.setToken("123");
 		
-		String appKey = "801281774";
-		String appSecret = "bb01c18c95cb8bb7e0a86ef32b616c4e";
+		String appKey = systemConfigurer.getProperty("appKey");
+		String appSecret = systemConfigurer.getProperty("appSecret");
+		
+		
+		int position = imgPath.lastIndexOf("uploadFile");
+		String relativePath = imgPath.substring(position+11);
+		
+		String picUrl = "http://diy.produ.cn/watui/watuiapi?method=getThumbnail&relativePath="+relativePath;
+		
+		String appContent = " 应用地址："+systemConfigurer.getProperty("appUrl");
+	
 		
 		PostParameter appid = new PostParameter("appid",appKey);
 		PostParameter openid = new PostParameter("openid",openId);
 		PostParameter openkey = new PostParameter("openkey",openKey);
 		PostParameter wbversion = new PostParameter("wbversion","1");
 		PostParameter format = new PostParameter("format","json");
-		PostParameter contentParam = new PostParameter("content",content);
-		PostParameter clientip = new PostParameter("clientip","119.253.56.46");
-		PostParameter pic = new PostParameter("pic","D://123.jpg");
+		PostParameter contentParam = new PostParameter("content",content+appContent);
+		PostParameter clientip = new PostParameter("clientip",ip);
+		PostParameter pic = new PostParameter("pic_url",picUrl);
+		
 		
 		HashMap<String, String> map = new HashMap<String,String>();
 		map.put("appid",appKey);
@@ -743,7 +682,7 @@ public class ComicServiceImplement implements ComicServiceInterface {
 		PostParameter sigParam = null;
 		
 		try {
-			String sig = SnsSigCheck.makeSig("post","t/add_pic", map, appSecret);
+			String sig = SnsSigCheck.makeSig("post","t/add_pic_url", map, appSecret);
 			sigParam = new PostParameter("sig",sig);
 		} catch (OpensnsException e) {
 			e.printStackTrace();
@@ -752,20 +691,40 @@ public class ComicServiceImplement implements ComicServiceInterface {
 		PostParameter[] params = new PostParameter[]{appid,openid,openkey,wbversion,format,contentParam,clientip,pic,sigParam};
 		
 		try {
-			Response response = client.post(url, params);
-			System.out.println("Response："+response.asString());
+			response = client.post(url, params).asJSONObject();
+			System.out.println("Response："+response.toString());
+
 		} catch (WeiboException e) {
 			e.printStackTrace();
 		}
 		
-		return null;
+		return response;
 	}
 
-	public static void main(String[] args) {
-		String openid = "14219AC2BF3FCDC2D80914235C042566";
-		String openkey = "75869870BBAD0590086F51913C99E2CB";
-		shareToTapp1("hello"+System.currentTimeMillis(),openid,openkey,"tapp");
+	@Override
+	public String movieClipToTapp(String userId, String clipId, String content,
+			String type, String filePath, String pf, String openId,
+			String openKey, String ip) {
+		boolean flag = false;
+		JSONObject response = this.publishTencentWeibo(content, openId, openKey, ip, filePath);
+		//发微博成功
+		try {
+			if(response.getInt("ret") == 0){
+				weibo4j.org.json.JSONObject weibo = response.getJSONObject("data");
+				String weiboId = weibo.getString("id");
+				Weibostat stat = this.generateWeibostat(weiboId,clipId,clipId,type,userId,pf);
+				int rows = dbVisitor.createWeibostat(stat);
+				if(rows > 0){
+					flag = true;
+				}
+			}else{
+				log.info("Publish tencent weibo failed, error msg is "+response.getString("msg"));
+			}
+		} catch (weibo4j.org.json.JSONException e) {
+			e.printStackTrace();
+		}
+		
+		return String.valueOf(flag);
 	}
-
 
 }

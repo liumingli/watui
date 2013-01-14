@@ -210,10 +210,17 @@ public class AppStarter extends HttpServlet implements ApplicationListener,
 				    if(method.equals(AppStarter.SAVEANIM)){
 						String result = apiAdaptor.createAnimation(fileItems);
 						pw.write(result);
+						
 					 }else if (method.equals(AppStarter.MOVIECLIPTOWEIBO)){	
 						 //先保存400图片，再发送到微博
 						 String result = apiAdaptor.createImgAndPublish(fileItems);
 						 pw.print(result);
+					
+					 }else if (method.equals(AppStarter.MOVIECLIPTOTAPP)){	
+						 //先保存400图片，再发送到微博
+						 String result = apiAdaptor.createImgAndSend(fileItems);
+						 pw.print(result);
+						 
 						 
 					 }else{
 						

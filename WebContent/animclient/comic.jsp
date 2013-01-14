@@ -100,7 +100,8 @@
 			flashvars.debug = 'true'; 
 			flashvars.userId = userId;
 			flashvars.pf = pf;
-			
+			flashvars.openid = openid;
+			flashvars.openkey = openkey;
 			flashvars.ip = source;
 			
 			var swfVersionStr = "11.1.0";

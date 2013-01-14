@@ -59,16 +59,13 @@ public interface ExtVisitorInterface {
 	
 	
 	
-	
-	//-----------------------------腾讯开放平台相应api
-	public static final String GETTENCENTUSER = "getTencentUser";
-	
 	//操作微博用户，更新或新建
 	public static final String OPERATETAPPUSER = "operateTappUser";
 	
 	//腾讯微博
 	public static final String SHARETOTAPP = "shareToTapp";
 	
-    
+    //发送视频短片到腾讯微博
+	public static final String MOVIECLIPTOTAPP = "movieClipToTapp";
     
 }

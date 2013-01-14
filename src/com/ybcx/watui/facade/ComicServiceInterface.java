@@ -10,14 +10,13 @@ import com.ybcx.watui.beans.Cartoon;
 import com.ybcx.watui.beans.Yonkoma;
 import com.ybcx.watui.beans.UserDetail;
 
-
 public interface ComicServiceInterface {
-	
+
 	// 设置图片文件保存路径，由ApiAdaptor赋值
 	public void saveImagePathToProcessor(String filePath);
 
 	public String createAdImg(FileItem sourceData);
-	
+
 	public String createAnimation(FileItem shotData, String userId,
 			String name, String content);
 
@@ -26,7 +25,7 @@ public interface ComicServiceInterface {
 	public void getAssetFile(String relativePath, HttpServletResponse res);
 
 	public String yonkomaToWeibo(String type, String primaryId,
-			String endingId, String userId, String content,  String animId);
+			String endingId, String userId, String content, String animId);
 
 	public String operateWeiboUser(String userId, String accessToken);
 
@@ -40,17 +39,21 @@ public interface ComicServiceInterface {
 
 	public List<Yonkoma> getYonkomaByPage(String primary, String pageSize,
 			String pageNum);
-	
+
 	public String createClipImage(FileItem shotData);
 
-	public String movieClipToWeibo(String userId, String clipId, String content, String type, String imgPath);
+	public String movieClipToWeibo(String userId, String clipId,
+			String content, String type, String imgPath);
 
-	public String getTencentUser(String openId, String openKey, String pf,
-			String pfKey);
+	public String operateTappUser(String openId, String nickName,
+			String accessToken, String pf);
 
-	public String operateTappUser(String openId, String nickName, String accessToken, String pf);
+	public String shareToTapp(String type, String primaryId, String endingId,
+			String userId, String content, String openId, String openKey,
+			String pf, String ip);
 
-	public String shareToTapp(String type, String primaryId, String endingId, String userId, String content, String animId, String openId, String openKey, String pf);
-
+	public String movieClipToTapp(String userId, String clipId, String content,
+			String type, String filePath, String pf, String openId,
+			String openKey, String ip);
 
 }

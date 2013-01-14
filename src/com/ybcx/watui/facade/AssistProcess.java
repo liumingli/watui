@@ -104,18 +104,6 @@ public class AssistProcess {
 			pw.print(result);
 			pw.close();
 			
-		}else if (action.equals(AppStarter.GETTENCENTUSER)) {
-			res.setContentType("text/plain;charset=UTF-8");
-			PrintWriter pw = res.getWriter();
-			String openId = req.getParameter("openId");
-			String openKey = req.getParameter("openKey");
-			String pf = req.getParameter("pf");
-			String pfKey = req.getParameter("pfKey");
-		    String result= apiAdaptor.getTencentUser(openId,openKey,pf,pfKey);
-			log.info(result);
-			pw.print(result);
-			pw.close();
-			
 		//操作腾讯微博用户
 		}else if (action.equals(AppStarter.OPERATETAPPUSER)) {
 			res.setContentType("text/plain;charset=UTF-8");
@@ -137,15 +125,14 @@ public class AssistProcess {
 			String endingId = req.getParameter("endingId");
 			String userId = req.getParameter("userId");
 			String content = req.getParameter("content");
-			String animId = req.getParameter("animId");
 			String openId = req.getParameter("openId");
 			String openKey = req.getParameter("openKey");
 			String pf = req.getParameter("pf");
-		    String result= apiAdaptor.shareToTapp(type,primaryId,endingId,userId,content,animId,openId,openKey,pf);
+			String ip = req.getParameter("ip");
+		    String result= apiAdaptor.shareToTapp(type,primaryId,endingId,userId,content,openId,openKey,pf,ip);
 			log.info(result);
 			pw.print(result);
 			pw.close();
-			
 			
 		}else{
 			
