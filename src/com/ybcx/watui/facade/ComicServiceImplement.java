@@ -18,6 +18,8 @@ import java.util.Properties;
 
 import javax.servlet.http.HttpServletResponse;
 
+import net.sf.json.JSONObject;
+
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.util.Streams;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -30,8 +32,8 @@ import weibo4j.http.ImageItem;
 import weibo4j.model.PostParameter;
 import weibo4j.model.Status;
 import weibo4j.model.WeiboException;
-import weibo4j.org.json.JSONObject;
 
+import com.qq.open.OpenApiV3;
 import com.qq.open.OpensnsException;
 import com.qq.open.SnsSigCheck;
 import com.sun.image.codec.jpeg.ImageFormatException;
@@ -658,6 +660,7 @@ public class ComicServiceImplement implements ComicServiceInterface {
 		String relativePath = imgPath.substring(position+11);
 		
 		String picUrl = "http://diy.produ.cn/watui/watuiapi?method=getThumbnail&relativePath="+relativePath;
+		System.out.println(">>>>>>>>>>>>>"+picUrl);
 		
 		String appContent = " 应用地址："+systemConfigurer.getProperty("appUrl");
 	
@@ -706,7 +709,7 @@ public class ComicServiceImplement implements ComicServiceInterface {
 			String type, String filePath, String pf, String openId,
 			String openKey, String ip) {
 		boolean flag = false;
-		JSONObject response = this.publishTencentWeibo(content, openId, openKey, ip, filePath);
+		weibo4j.org.json.JSONObject response = this.publishTencentWeibo(content, openId, openKey, ip, filePath);
 		//发微博成功
 		try {
 			if(response.getInt("ret") == 0){
@@ -725,6 +728,65 @@ public class ComicServiceImplement implements ComicServiceInterface {
 		}
 		
 		return String.valueOf(flag);
+	}
+
+	@Override
+	public UserDetail getTappUser(String openId, String openKey, String pf) {
+		UserDetail userDetail = new UserDetail();
+		
+		log.info("openId="+openId+"-----------openKey="+openKey);
+		
+		String appKey = systemConfigurer.getProperty("appKey");
+		String appSecret = systemConfigurer.getProperty("appSecret");
+		
+		String serverName =  systemConfigurer.getProperty("serverName");
+		
+		OpenApiV3 sdk = new OpenApiV3(appKey, appSecret);
+	    sdk.setServerName(serverName);
+	    
+	    String scriptName = "/v3/user/get_info";
+
+        // 指定HTTP请求协议类型
+        String protocol = "http";
+
+        // 填充URL请求参数
+        HashMap<String,String> params = new HashMap<String, String>();
+        params.put("openid", openId);
+        params.put("openkey", openKey);
+        params.put("pf", pf);
+        
+        String nickName = "";
+        String avatarMini = "";
+        String avatarLarge = "";
+        try
+        {
+            String resp = sdk.api(scriptName, params, protocol);
+            JSONObject json = JSONObject.fromObject(resp);
+            if(json.getInt("ret") == 0){
+            	nickName = json.getString("nickname");
+            	String figureurl = json.getString("figureurl");
+            	int position = figureurl.lastIndexOf("/")+1;
+        		String relativePath = figureurl.substring(0,position);
+            	avatarMini = relativePath+"50";
+            	avatarLarge = relativePath + "100";
+            }else{
+            	log.info("/v3/user/get_info faild, error msg is "+json.getString("msg"));
+            }
+            System.out.println(resp);
+            
+        }catch (OpensnsException e){
+            System.out.printf("Request Failed. code:%d, msg:%s\n", e.getErrorCode(), e.getMessage());
+            e.printStackTrace();
+        }
+		
+		userDetail.setId("");
+		userDetail.setAccessToken("");
+		userDetail.setAvatarLarge(avatarLarge);
+		userDetail.setNickName(nickName);
+		userDetail.setAvatarMini(avatarMini);
+		userDetail.setWealth(100);
+
+		return userDetail;
 	}
 
 }

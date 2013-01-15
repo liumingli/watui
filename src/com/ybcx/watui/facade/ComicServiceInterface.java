@@ -56,4 +56,6 @@ public interface ComicServiceInterface {
 			String type, String filePath, String pf, String openId,
 			String openKey, String ip);
 
+	public UserDetail getTappUser(String openId, String openKey, String pf);
+
 }

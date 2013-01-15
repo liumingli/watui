@@ -342,5 +342,10 @@ public class ApiAdaptor {
 		
 		return result;
 	}
+	
+	public String getTappUser(String openId, String openKey, String pf) {
+		UserDetail detail= comicService.getTappUser(openId,openKey,pf);
+		return JSONArray.fromObject(detail).toString();
+	}
 
 } // end of class

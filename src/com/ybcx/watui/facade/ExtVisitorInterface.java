@@ -67,5 +67,8 @@ public interface ExtVisitorInterface {
 	
     //发送视频短片到腾讯微博
 	public static final String MOVIECLIPTOTAPP = "movieClipToTapp";
+	
+	//获取微博用户头像
+	public static final String GETTAPPUSER = "getTappUser";
     
 }

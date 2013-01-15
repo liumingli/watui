@@ -71,11 +71,11 @@
 	 	 	
 	 	 	if(openid != null && openid !=""&& openkey != null && openkey !=""){
 	 	 		//操作用户，正常后返回id，否则返回false
-	 	 	  	operateTappUser(nick,pf,accessToken,openid,openkey);
+	 	 	  	operateTappUser(nick,pf,accessToken,openid,openkey,source);
 	 	 	}
 	 	 };
 	 	 
-	 	 function operateTappUser(nick,pf,accessToken,openid,openkey){
+	 	 function operateTappUser(nick,pf,accessToken,openid,openkey,source){
 	 		$.post("/watui/watuiapi", {
 				'method' : 'operateTappUser',
 				'openId' : openid,
@@ -95,13 +95,13 @@
 		
 		
 		function createWatui(userId,pf,openid,openkey,source){
+			
 			var flashvars = {};
 			
-			flashvars.debug = 'true'; 
 			flashvars.userId = userId;
 			flashvars.pf = pf;
-			flashvars.openid = openid;
-			flashvars.openkey = openkey;
+			flashvars.openId = openid;
+			flashvars.openKey = openkey;
 			flashvars.ip = source;
 			
 			var swfVersionStr = "11.1.0";
@@ -116,7 +116,7 @@
 			attributes.id = "flashContent";
 			attributes.name = "flashContent";
 			attributes.align = "middle";
-			swfobject.embedSWF("Watui.swf?v=1.04&date=0110", "flashContent", 760, 600, swfVersionStr, xiSwfUrlStr,
+			swfobject.embedSWF("Watui.swf?v=1.04&date=0115", "flashContent", 760, 600, swfVersionStr, xiSwfUrlStr,
 					flashvars, params, attributes);
 			swfobject.createCSS("#flashContent", "display:block;text-align:left;");
 		}

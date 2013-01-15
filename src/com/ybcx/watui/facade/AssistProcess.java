@@ -134,6 +134,17 @@ public class AssistProcess {
 			pw.print(result);
 			pw.close();
 			
+		}else if (action.equals(AppStarter.GETTAPPUSER)) {
+			res.setContentType("text/plain;charset=UTF-8");
+			PrintWriter pw = res.getWriter();	
+			String openId = req.getParameter("openId");
+			String openKey = req.getParameter("openKey");
+			String pf = req.getParameter("pf");
+		    String result= apiAdaptor.getTappUser(openId,openKey,pf);
+			log.info(result);
+			pw.print(result);
+			pw.close();
+			
 		}else{
 			
 		}
