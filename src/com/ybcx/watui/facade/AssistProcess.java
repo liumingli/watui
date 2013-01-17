@@ -144,6 +144,40 @@ public class AssistProcess {
 			log.info(result);
 			pw.print(result);
 			pw.close();
+		
+		//FIXME 
+		//发送视频到新浪微博
+		}else if (action.equals(AppStarter.MOVIECLIPVIDEOTOWEIBO)) {
+			res.setContentType("text/plain;charset=UTF-8");
+			PrintWriter pw = res.getWriter();	
+			String userId = req.getParameter("userId");
+			String movieId = req.getParameter("movieId");
+			String content = req.getParameter("content");
+			String type = req.getParameter("type");
+			String url = req.getParameter("url");
+		    String result= apiAdaptor.mvoieCliipVideoToWeibo(userId,movieId,content,type,url);
+			log.info(result);
+			pw.print(result);
+			pw.close();	
+		
+		//发送视频到腾讯微博
+		}else if (action.equals(AppStarter.MOVIECLIPVIDEOTOTAPP)) {
+			res.setContentType("text/plain;charset=UTF-8");
+			PrintWriter pw = res.getWriter();	
+			String userId = req.getParameter("userId");
+			String movieId = req.getParameter("movieId");
+			String content = req.getParameter("content");
+			String type = req.getParameter("type");
+			String url = req.getParameter("url");
+			String openId = req.getParameter("openId");
+			String openKey = req.getParameter("openKey");
+			String pf = req.getParameter("pf");
+			String ip = req.getParameter("ip");
+		    String result= apiAdaptor.movieClipVideoToTapp(userId,movieId,content,type,url,openId,openKey,pf,ip);
+			log.info(result);
+			pw.print(result);
+			pw.close();
+			
 			
 		}else{
 			

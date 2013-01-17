@@ -347,5 +347,19 @@ public class ApiAdaptor {
 		UserDetail detail= comicService.getTappUser(openId,openKey,pf);
 		return JSONArray.fromObject(detail).toString();
 	}
+	
+	public String mvoieCliipVideoToWeibo(String userId, String movieId,
+			String content, String type, String url) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	public String movieClipVideoToTapp(String userId, String movieId,
+			String content, String type, String url, String openId,
+			String openKey, String pf, String ip) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 
 } // end of class
