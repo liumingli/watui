@@ -549,6 +549,7 @@ public class ComicServiceImplement implements ComicServiceInterface {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		System.out.println("upload video, save movieclip image path is "+filePath);
 		return filePath;
 	}
 
@@ -580,7 +581,6 @@ public class ComicServiceImplement implements ComicServiceInterface {
 		String userId = openId.substring(0,16);
 		int count= dbVisitor.getUserByUserIdAndPlatform(userId,pf);
 		if(count >0){
-			log.info(userId+"----------"+accessToken);
 			int udpRows = dbVisitor.updateUserById(userId,accessToken,nickName);
 			if(udpRows < 0){
 				flag = false;
@@ -789,4 +789,134 @@ public class ComicServiceImplement implements ComicServiceInterface {
 		return userDetail;
 	}
 
+	@Override
+	public String movieClipVideoToWeibo(String userId, String movieId,
+			String content, String type, String url, String imgPath) {
+		boolean flag = false;
+		User user = dbVisitor.getUserById(userId);
+		String token = user.getAccessToken();
+		String appUrl = "http://apps.weibo.com/watuiup";
+		String weiboId = this.publishVideoWeibo(token, url,  content, appUrl,imgPath);
+		//发送微博成功，
+		if(!"".equals(weiboId)){
+			//向数据库中插入一条数据
+			Weibostat stat = this.generateWeibostat(weiboId,movieId,movieId,type,userId,"sina");
+			int rows = dbVisitor.createWeibostat(stat);
+			if(rows > 0){
+				flag = true;
+			}
+		}else{
+			log.info("Weibo exception, return status is null");
+		}
+		
+		return String.valueOf(flag);
+	}
+
+	private String publishVideoWeibo(String token, String url, String content,
+			String appUrl, String imgPath) {
+		log.info("watui publish weibo parmas token :"+token);
+		String weiboId = "";
+		try{
+			try{
+				String resultText =content+"  视频地址："+url+"    应用地址："+appUrl;
+				byte[] imgContent= readFileImage(imgPath);
+				ImageItem pic=new ImageItem("pic",imgContent);
+				String s=java.net.URLEncoder.encode(resultText,"utf-8");
+				Timeline tl = new Timeline();
+				tl.client.setToken(token);
+				Status status=tl.UploadStatus(s, pic);
+				
+				//发送成功后返回微博id
+				weiboId = status.getId();
+				
+				log.info("Successfully upload the status to ["
+						+status.getText()+"].");
+			}catch(Exception e1){
+				e1.printStackTrace();
+				log.info("WeiboException: invalid_access_token.");
+			}
+		}catch(Exception ioe){
+			ioe.printStackTrace();
+			log.info("Failed to read the system input.");
+		}
+		
+		return weiboId;
+	}
+	
+	@Override
+	public String movieClipToVideoToTapp(String userId, String movieId,
+			String content, String type, String url, String openId,
+			String openKey, String pf, String ip) {
+		boolean flag = false;
+		weibo4j.org.json.JSONObject response = this.publishVideoTencent(content, openId, openKey, ip, url);
+		//发微博成功
+		try {
+			if(response.getInt("ret") == 0){
+				weibo4j.org.json.JSONObject weibo = response.getJSONObject("data");
+				String weiboId = weibo.getString("id");
+				Weibostat stat = this.generateWeibostat(weiboId,movieId,movieId,type,userId,pf);
+				int rows = dbVisitor.createWeibostat(stat);
+				if(rows > 0){
+					flag = true;
+				}
+			}else{
+				log.info("Publish tencent weibo failed, error msg is "+response.getString("msg"));
+			}
+		} catch (weibo4j.org.json.JSONException e) {
+			e.printStackTrace();
+		}
+		
+		return String.valueOf(flag);
+	}
+
+	private weibo4j.org.json.JSONObject publishVideoTencent(String content,
+			String openId, String openKey, String ip, String url) {
+		weibo4j.org.json.JSONObject response = new weibo4j.org.json.JSONObject();
+		String askUrl = "http://open.t.qq.com/api/t/add_video";
+		HttpClient client = new HttpClient();
+		client.setToken("123");
+		
+		String appKey = systemConfigurer.getProperty("appKey");
+		String appSecret = systemConfigurer.getProperty("appSecret");
+		
+		String appContent = " 应用地址："+systemConfigurer.getProperty("appUrl");
+		
+		PostParameter appid = new PostParameter("appid",appKey);
+		PostParameter openid = new PostParameter("openid",openId);
+		PostParameter openkey = new PostParameter("openkey",openKey);
+		PostParameter wbversion = new PostParameter("wbversion","1");
+		PostParameter format = new PostParameter("format","json");
+		PostParameter contentParam = new PostParameter("content",content+appContent);
+		PostParameter clientip = new PostParameter("clientip",ip);
+		PostParameter pic = new PostParameter("video_url",url);
+		
+		
+		HashMap<String, String> map = new HashMap<String,String>();
+		map.put("appid",appKey);
+		map.put("openid",openId);
+		map.put("openkey",openKey);
+		map.put("wbversion","1");
+		map.put("reqtime",String.valueOf(new Date().getTime()));
+		
+		PostParameter sigParam = null;
+		
+		try {
+			String sig = SnsSigCheck.makeSig("post","t/add_video", map, appSecret);
+			sigParam = new PostParameter("sig",sig);
+		} catch (OpensnsException e) {
+			e.printStackTrace();
+		}
+		
+		PostParameter[] params = new PostParameter[]{appid,openid,openkey,wbversion,format,contentParam,clientip,pic,sigParam};
+		
+		try {
+			response = client.post(askUrl, params).asJSONObject();
+			System.out.println("Response："+response.toString());
+
+		} catch (WeiboException e) {
+			e.printStackTrace();
+		}
+		
+		return response;
+	}
 }

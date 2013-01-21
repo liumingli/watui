@@ -196,7 +196,6 @@ public class ApiAdaptor {
 	}
 	
 	public String operateTappUser(String openId, String nickName, String accessToken, String pf) {
-		// TODO Auto-generated method stub
 		String result = comicService.operateTappUser(openId,nickName,accessToken,pf);
 		return result;
 	}
@@ -230,7 +229,6 @@ public class ApiAdaptor {
 		}
 	
 		String result = comicService.createClipImage(shotData);
-		
 		return result;
 	}
 	
@@ -348,18 +346,69 @@ public class ApiAdaptor {
 		return JSONArray.fromObject(detail).toString();
 	}
 	
-	public String mvoieCliipVideoToWeibo(String userId, String movieId,
-			String content, String type, String url) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
 	public String movieClipVideoToTapp(String userId, String movieId,
 			String content, String type, String url, String openId,
 			String openKey, String pf, String ip) {
-		// TODO Auto-generated method stub
-		return null;
+		String result = comicService.movieClipToVideoToTapp(userId,movieId,content,type,url,openId,openKey,pf,ip);
+		return result;
+	}
+	
+	public String mvoieClipVideoToWeibo(List<FileItem> fileItems) {
+		String result = "false";
+		//先保存400的图片
+		String filePath = this.createClipImage(fileItems);
+		File imgFile = new File(filePath);
+		if(imgFile.exists()){
+			//再发微博
+			result = this.publishVideoWeibo(fileItems,filePath);
+		}else{
+			
+		}
+		return result;
 	}
 
+	private String publishVideoWeibo(List<FileItem> fileItems, String imgPath) {
+		String userId = "";
+		String content = "";
+		String type = "";
+		String clipId = "";
+		String url = "";
+		
+		for (int i = 0; i < fileItems.size(); i++) {
+			
+			FileItem item = fileItems.get(i);
+			if (item.isFormField()) {
+				
+				if (item.getFieldName().equals("userId")) {
+					userId = item.getString();
+				}
+				
+				if (item.getFieldName().equals("movieId")) {
+					clipId = item.getString();
+				}
+				
+				if (item.getFieldName().equals("content")) {
+					try {
+						content = item.getString("UTF-8");
+					} catch (UnsupportedEncodingException e) {
+						e.printStackTrace();
+					}
+				}
+				
+				if(item.getFieldName().equals("type")){
+					type = item.getString();
+				}
+				
+				if(item.getFieldName().equals("url")){
+					url = item.getString();
+				}
+				
+			}
+		}//取参数完成
+		
+		String result = comicService.movieClipVideoToWeibo(userId,clipId,content,type,url,imgPath);
+		
+		return result;
+	}
 
 } // end of class

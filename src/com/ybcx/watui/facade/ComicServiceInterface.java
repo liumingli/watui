@@ -58,4 +58,11 @@ public interface ComicServiceInterface {
 
 	public UserDetail getTappUser(String openId, String openKey, String pf);
 
+	public String movieClipToVideoToTapp(String userId, String movieId,
+			String content, String type, String url, String openId,
+			String openKey, String pf, String ip);
+
+	public String movieClipVideoToWeibo(String userId, String clipId,
+			String content, String type, String url, String imgPath);
+
 }

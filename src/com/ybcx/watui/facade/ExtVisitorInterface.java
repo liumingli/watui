@@ -46,7 +46,6 @@ public interface ExtVisitorInterface {
 	public static final String MOVIECLIPTOWEIBO = "movieClipToWeibo";
 	
 	
-	//-----------------以下三个没有用
 	
 	//动画保存
 	public static final String SAVEANIM = "saveAnim";
@@ -70,7 +69,6 @@ public interface ExtVisitorInterface {
 	
 	//获取微博用户头像
 	public static final String GETTAPPUSER = "getTappUser";
-	
 	
 	
 	//发送短片视频到新浪微博

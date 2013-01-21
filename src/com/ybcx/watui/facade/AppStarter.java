@@ -220,7 +220,13 @@ public class AppStarter extends HttpServlet implements ApplicationListener,
 						 //先保存400图片，再发送到微博
 						 String result = apiAdaptor.createImgAndSend(fileItems);
 						 pw.print(result);
-						 
+						//FIXME 	//发送视频到新浪微博
+					}else if (method.equals(AppStarter.MOVIECLIPVIDEOTOWEIBO)) {
+						log.info("Call method movieClipVideoToWeibo>>>>>>");
+					    String result= apiAdaptor.mvoieClipVideoToWeibo(fileItems);
+					    log.info("movieClipVideoToWeibo return is "+result);
+						pw.print(result);
+						pw.close();		 
 						 
 					 }else{
 						
